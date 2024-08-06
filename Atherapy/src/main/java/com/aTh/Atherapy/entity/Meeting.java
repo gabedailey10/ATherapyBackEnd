@@ -1,11 +1,15 @@
 package com.aTh.Atherapy.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.sql.Time;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -26,6 +30,10 @@ public class Meeting {
     private Time end_time;
 
     @ManyToMany(mappedBy = "meetings", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JsonBackReference
-    private Set<User> users = new HashSet<>();
+    @JsonIgnore
+    private List<User> users;
+
+
+    @OneToMany(mappedBy = "meeting")
+    private List<Request> requests = new ArrayList<>();
 }

@@ -1,11 +1,14 @@
 package com.aTh.Atherapy.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -32,6 +35,8 @@ public class User {
                     @JoinColumn(name = "meeting_id", referencedColumnName = "id")
             }
     )
-    @JsonManagedReference
-    private Set<Meeting> meetings = new HashSet<>();
+    private List<Meeting> meetings = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user")
+    private List<Request> requests = new ArrayList<>();
 }

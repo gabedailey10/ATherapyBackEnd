@@ -5,6 +5,7 @@ import com.aTh.Atherapy.entity.Meeting;
 import com.aTh.Atherapy.entity.User;
 import com.aTh.Atherapy.repository.MeetingRepo;
 import com.aTh.Atherapy.repository.UserRepo;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -35,7 +36,7 @@ public class UserMeetingController {
     public List<User> findAllUsers() {
         return userRepo.findAll();
     }
-    @CrossOrigin(origins = "http://localhost:3000")
+
     @GetMapping("/getData")
     public List<Meeting> meetings() {
         return meetingRepo.findAll();
@@ -51,6 +52,23 @@ public class UserMeetingController {
     @GetMapping("/find/{userName}")
     public List<User> findUserByName(@PathVariable String userName) {
         return userRepo.findByUserNameContaining(userName);
+    }
+
+
+
+
+    @PostMapping("/{meetingId}/removeUser/{userId}")
+    public Meeting removeUserFromMeeting(@PathVariable Integer meetingId, @PathVariable Integer userId) {
+        Meeting meeting = meetingRepo.findById(meetingId).orElse(null);
+        User user = userRepo.findById(userId).orElse(null);
+
+        if (meeting != null && user != null) {
+            meeting.getUsers().remove(user);
+            user.getMeetings().remove(meeting);
+            userRepo.save(user); // Ensure the user entity is updated
+            return meetingRepo.save(meeting); // Ensure the meeting entity is updated
+        }
+        return null;
     }
 
 
