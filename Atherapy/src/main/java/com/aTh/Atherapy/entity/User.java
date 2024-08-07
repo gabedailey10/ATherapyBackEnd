@@ -1,14 +1,8 @@
 package com.aTh.Atherapy.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -17,26 +11,25 @@ import java.util.Set;
 @Setter
 @Getter
 @NoArgsConstructor
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private String userName;
+    private String username;
+    private String password;
+    private boolean enabled;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private Set<Authority> authorities = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinTable(name = "USER_MEETING_TABLE",
-            joinColumns = {
-                    @JoinColumn(name = "user_id", referencedColumnName = "id")
-            },
-            inverseJoinColumns = {
-                    @JoinColumn(name = "meeting_id", referencedColumnName = "id")
-            }
-    )
-    private List<Meeting> meetings = new ArrayList<>();
+    @JoinTable(name = "user_meeting_table",
+            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "meeting_id", referencedColumnName = "id"))
+    private Set<Meeting> meetings = new HashSet<>();
 
     @OneToMany(mappedBy = "user")
-    private List<Request> requests = new ArrayList<>();
+    private Set<Request> requests = new HashSet<>();
 }

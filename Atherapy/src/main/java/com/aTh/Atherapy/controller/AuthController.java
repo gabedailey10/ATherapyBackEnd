@@ -2,36 +2,38 @@ package com.aTh.Atherapy.controller;
 
 
 import com.aTh.Atherapy.service.TokenService;
-
-import org.slf4j.LoggerFactory;
-import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.web.bind.annotation.*;
 
-
+import java.util.Map;
 
 @RestController
 public class AuthController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(AuthController.class);
-
-
     private final TokenService tokenService;
+    private final AuthenticationManager authenticationManager;
 
-    public AuthController(TokenService tokenService) {
+    @Autowired
+    public AuthController(TokenService tokenService, AuthenticationManager authenticationManager) {
         this.tokenService = tokenService;
+        this.authenticationManager = authenticationManager;
     }
 
     @PostMapping("/token")
-    public String token(Authentication authentication) {
-
-        LOG.debug("Token requested for user: '{}'", authentication.getName());
-
-        String token = tokenService.generateToken(authentication);
-        LOG.debug("Token generated: '{}'", token);
-        return token;
+    public String token(@RequestBody Map<String, String> userCredentials) {
+        try {
+            String username = userCredentials.get("username");
+            String password = userCredentials.get("password");
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(username, password)
+            );
+            return tokenService.generateToken(authentication);
+        } catch (AuthenticationException e) {
+            throw new RuntimeException("Invalid login credentials");
+        }
     }
-
-
 }

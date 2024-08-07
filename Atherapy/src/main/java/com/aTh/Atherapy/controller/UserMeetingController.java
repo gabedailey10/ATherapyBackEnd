@@ -49,9 +49,9 @@ public class UserMeetingController {
         return userRepo.findById(userId).orElse(null);
     }
 
-    @GetMapping("/find/{userName}")
-    public List<User> findUserByName(@PathVariable String userName) {
-        return userRepo.findByUserNameContaining(userName);
+    @GetMapping("/find/{username}")
+    public List<User> findUserByName(@PathVariable String username) {
+        return userRepo.findByUsernameContaining(username);
     }
 
 

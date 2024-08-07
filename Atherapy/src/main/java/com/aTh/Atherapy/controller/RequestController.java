@@ -83,7 +83,7 @@ public class RequestController {
         userRepo.save(user);
 
 
-        return ResponseEntity.status(200).body("Added " + user.getUserName() + " to "  + meeting.getTitle());
+        return ResponseEntity.status(200).body("Added " + user.getUsername() + " to "  + meeting.getTitle());
     }
 
 
