@@ -1,14 +1,12 @@
 package com.aTh.Atherapy.entity;
 
-
+import com.aTh.Atherapy.enums.RequestStatus;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-
 
 @Entity
 @Table(name = "REQUEST_TABLE")
@@ -20,18 +18,18 @@ public class Request {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @ManyToOne
     @JsonIgnore
     @JoinColumn(name = "user_id")
-    private User user;
+    private UserProfile user;
 
     @ManyToOne
     @JsonIgnore
     @JoinColumn(name = "meeting_id")
     private Meeting meeting;
 
-
-
+    @Enumerated(EnumType.STRING)
+    private RequestStatus status;
 }

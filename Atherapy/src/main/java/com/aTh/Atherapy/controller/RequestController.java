@@ -1,13 +1,12 @@
 package com.aTh.Atherapy.controller;
 
-
 import com.aTh.Atherapy.entity.Meeting;
 import com.aTh.Atherapy.entity.Request;
-import com.aTh.Atherapy.entity.User;
+import com.aTh.Atherapy.entity.UserProfile;
+import com.aTh.Atherapy.enums.RequestStatus;
 import com.aTh.Atherapy.repository.MeetingRepo;
 import com.aTh.Atherapy.repository.RequestRepo;
-import com.aTh.Atherapy.repository.UserRepo;
-import jakarta.transaction.Transactional;
+import com.aTh.Atherapy.repository.UserProfileRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +18,7 @@ import java.util.List;
 public class RequestController {
 
     @Autowired
-    private UserRepo userRepo;
+    private UserProfileRepo userRepo;
 
     @Autowired
     private MeetingRepo meetingRepo;
@@ -27,76 +26,28 @@ public class RequestController {
     @Autowired
     private RequestRepo requestRepo;
 
-    @PostMapping("/createRequest")
-    public ResponseEntity<String> addRequest(@RequestParam Integer userId, @RequestParam Integer meetingId) {
-        User user = userRepo.findById(userId).orElse(null);
-        Meeting meeting = meetingRepo.findById(meetingId).orElse(null);
-
-        if(user == null && meeting == null) {
-            return ResponseEntity.status(404).body("user or Meeting not found");
-        }
-
-        Request request = new Request();
-        request.setUser(user);
-        request.setMeeting(meeting);
-        requestRepo.save(request);
-
-        return ResponseEntity.status(200).body("Request Added Successfully");
-    }
 
 
-    @DeleteMapping("/remove")
-    public ResponseEntity<String> removeRequest(@RequestParam Integer requestId) {
-        Request request = requestRepo.findById(requestId).orElse(null);
 
-        if (request == null) {
-            return ResponseEntity.status(404).body("Request not found");
-        }
 
-        requestRepo.delete(request);
-
-        return ResponseEntity.ok("Request removed successfully");
-    }
-
-    @Transactional
-    @DeleteMapping("/accept")
-    public ResponseEntity<String> acceptRequest(@RequestParam Integer requestId) {
-        Request request = requestRepo.findById(requestId).orElse(null);
-
-        if(request == null) {
-            return ResponseEntity.status(400).body("Request Not Found");
-        }
-
-        User user = request.getUser();
-        Meeting meeting = request.getMeeting();
+    @PostMapping("/joinmeeting")
+    public ResponseEntity<String> joinMeeting(@RequestParam Long userId, @RequestParam Long meetingId) {
+        UserProfile user = userRepo.findById(userId).get();
+        Meeting meeting = meetingRepo.findById(meetingId).get();
 
         if(user == null || meeting == null) {
-            return ResponseEntity.status(400).body("user or meeting not found");
+            return ResponseEntity.status(404).body("Meeting not found or joinable");
         }
 
-        meeting.getUsers().add(user);
-        user.getMeetings().add(meeting);
-        requestRepo.delete(request);
+        Request newRequest = new Request();
+        newRequest.setUser(user);
+        newRequest.setMeeting(meeting);
+        newRequest.setStatus(RequestStatus.PENDING);
+
+        return ResponseEntity.status(200).body("Join request sent");
+    };
 
 
-        meetingRepo.save(meeting);
-        userRepo.save(user);
-
-
-        return ResponseEntity.status(200).body("Added " + user.getUsername() + " to "  + meeting.getTitle());
-    }
-
-
-    @GetMapping("/getRequests/{meetingId}")
-    public List<Request> getRequests(@RequestParam Integer meetingId) {
-
-        Meeting meeting = meetingRepo.findById(meetingId).orElse(null);
-
-        if(meeting != null) {
-            return meeting.getRequests();
-        }
-        return null;
-    }
 
     @GetMapping("/getAllRequests")
     public List<Request> getAllRequests() {

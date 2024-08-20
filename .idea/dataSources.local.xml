@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="dataSourceStorageLocal" created-in="IU-241.18968.26">
+    <data-source name="sqlserver@databaserest.database.windows.net" uuid="9f1f8ab0-d664-46fb-a992-0ac444e342b2">
+      <database-info product="" version="" jdbc-version="" driver-name="" driver-version="" dbms="MSSQL" />
+      <user-name>gabby</user-name>
+      <schema-mapping />
+    </data-source>
+  </component>
+</project>

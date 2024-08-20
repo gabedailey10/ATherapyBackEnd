@@ -70,7 +70,7 @@ public class SecurityConfig {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/register", "/token").permitAll()
+                        .requestMatchers("/register", "/token", "/error").permitAll()
                         .anyRequest().authenticated())
                 .oauth2ResourceServer((rs) ->
                         rs.jwt((jwt) -> jwt.decoder(jwtDecoder()))
